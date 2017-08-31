@@ -14,9 +14,9 @@ export default class App extends Component {
 			<div>
 				<Header />
 				<Container style={{ paddingTop: 100 }}>
-					<Route path="/rua-monitor/" component={SignIn}/>
+					<Route exact path="/rua-monitor/" component={SignIn}/>
 					<Route path="/rua-monitor/front-page" component={MainPage}/>
-					<Redirect to="/rua-monitor" />
+					<Redirect to="/rua-monitor/" />
 				</Container>
 			</div>
 		</Router>

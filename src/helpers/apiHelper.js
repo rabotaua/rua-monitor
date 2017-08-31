@@ -7,12 +7,12 @@ export const getTokenApi = (username, password) => {
 export const getData = (query) => {
 	const token = localStorage.getItem('authToken')
 
-	return axios.post('https://rualogs.appspot.com/query', query, {
-		headers: { 'Authorization': token }
+	return axios.post('https://bigquery.azurewebsites.net/query', { query }, {
+		headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
 	}).then(({data}) => data).catch(e => {
 		if(e && e.response && e.response.status === 401) {
 			localStorage.removeItem('authToken')
-			window.location = '/rua-monitor'
+			window.location = '/rua-monitor/'
 		}
 		else {
 			throw e

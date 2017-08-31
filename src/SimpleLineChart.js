@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
-import { Grid, Button, Header, Icon, Image, Loader, Segment } from 'semantic-ui-react'
-import loaderWireframe from './media/loader-wireframe.png'
+import { Grid, Button, Header, Icon, Segment } from 'semantic-ui-react'
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import './media/chart-loader.css'
 import spaceBg from './media/space-bg.jpg'
@@ -29,14 +28,9 @@ export default class SimpleLineChart extends Component {
 	}
 
 	render() {
-		const { chartData, refreshChartData, chartTitle, xKey, lineKey, lineName } = this.props
+		const { chartData, dot, stroke, strokeWidth, refreshChartData, chartTitle, xKey, lineKey, lineName } = this.props
 
-		let keys = null
-		if (chartData) {
-			keys = Object.keys(chartData[0])
-		}
-
-		return <div>
+		return <div style={{ marginBottom: 100 }}>
 			<Grid>
 				<Grid.Column width={5}>
 					<Header as='h3'>{chartTitle}</Header>
@@ -60,10 +54,10 @@ export default class SimpleLineChart extends Component {
 				           margin={{ top: 20, bottom: 20 }}>
 					<XAxis dataKey={xKey}/>
 					<YAxis/>
-					<CartesianGrid strokeDasharray="5 5"/>
+					<CartesianGrid strokeDasharray="3 3"/>
 					<Tooltip/>
 					<Legend/>
-					<Line type="monotone" name={lineName} dataKey={lineKey} stroke="#8884d8" activeDot={{ r: 8 }}/>
+					<Line legendType="square" type="monotone" name={lineName} dataKey={lineKey} dot={dot} strokeWidth={strokeWidth} stroke={stroke || '#000'} activeDot={{ r: 8 }}/>
 				</LineChart>
 			</ResponsiveContainer> : null}
 		</div>
