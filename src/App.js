@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {
-	BrowserRouter as Router, Redirect,
+	BrowserRouter as Router,
 	Route
 } from 'react-router-dom'
 import SignIn from './SignIn'

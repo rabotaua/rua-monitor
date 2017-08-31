@@ -2,9 +2,10 @@ import React, { Component } from 'react'
 import { getData } from './helpers/apiHelper'
 import { bigSqlQuery, jsErrorSqlQuery } from './helpers/sqlQueries'
 import { formatDateTime } from './helpers/formatDateTime'
-import { Header } from 'semantic-ui-react'
+import { Container, Divider, Header } from 'semantic-ui-react'
 import SimpleLineChart from './SimpleLineChart'
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import ReactSpeedometer from "react-d3-speedometer"
 
 
 export default class FrontPage extends Component {
@@ -12,6 +13,7 @@ export default class FrontPage extends Component {
 		super()
 
 		this.state = {
+			showSpeedometer: false,
 			chartData: null,
 			jsErrorChartData: null
 		}
@@ -20,7 +22,8 @@ export default class FrontPage extends Component {
 	getChartData() {
 		this.setState({
 			chartData: null,
-			jsErrorChartData: null
+			jsErrorChartData: null,
+			showSpeedometer: false
 		})
 
 		getData(bigSqlQuery).then(data => {
@@ -36,6 +39,11 @@ export default class FrontPage extends Component {
 				this.setState({
 					chartData: formattedData
 				})
+
+				setTimeout(() => {
+					this.setState({ showSpeedometer: true })
+				}, 1500)
+
 			}
 		}).catch((e) => {
 			this.setState({ chartData: false })
@@ -71,6 +79,11 @@ export default class FrontPage extends Component {
 	}
 
 	render() {
+		const { chartData, showSpeedometer } = this.state
+
+		const lastCpuVal = chartData && chartData.length ? chartData[chartData.length - 1]['cpu'] : null
+		const lastRamVal = chartData && chartData.length ? chartData[chartData.length - 1]['ram'] : null
+
 		return <div style={{ marginBottom: 100 }}>
 
 			<Header as='h1' dividing>Charts</Header>
@@ -81,30 +94,55 @@ export default class FrontPage extends Component {
 				xKey="dateTime"
 				lineName="consumption RAM (mb)"
 				lineKey="ram"
-				chartData={this.state.chartData}
+				chartData={chartData}
 				refreshChartData={this.getChartData.bind(this)}
 				stroke="#D383DB"
 				strokeWidth={1.3}
-			/>
+			>
+				{ showSpeedometer ? <Container textAlign="center">
+					<ReactSpeedometer
+						startColor="#33CC33"
+						endColor="#FF3535"
+						minValue={0}
+						maxValue={32000}
+						segments={8}
+						needleTransitionDuration={4000}
+						needleTransition="easeElastic"
+						value={lastRamVal}
+					/>
+				</Container> : null }
+			</SimpleLineChart>
 
 			<SimpleLineChart
 				chartTitle="CPU"
 				xKey="dateTime"
 				lineName="consumption CPU (percents)"
 				lineKey="cpu"
-				chartData={this.state.chartData}
+				chartData={chartData}
 				refreshChartData={this.getChartData.bind(this)}
 				stroke="#81D9CA"
 				strokeWidth={1.8}
 				dot={null}
-			/>
+			>
+				{ showSpeedometer ? <Container textAlign="center">
+					<ReactSpeedometer
+						startColor="#33CC33"
+						endColor="#FF3535"
+						minValue={0}
+						maxValue={100}
+						needleTransitionDuration={3000}
+						needleTransition="easeElastic"
+						value={lastCpuVal}
+					/>
+				</Container> : null }
+			</SimpleLineChart>
 
 			<SimpleLineChart
 				chartTitle="HDD"
 				xKey="dateTime"
 				lineName="Avg. Disk Queue Length"
 				lineKey="hdd_queue"
-				chartData={this.state.chartData}
+				chartData={chartData}
 				refreshChartData={this.getChartData.bind(this)}
 				stroke="#2F47B8"
 				strokeWidth={2}
@@ -116,7 +154,7 @@ export default class FrontPage extends Component {
 				xKey="dateTime"
 				lineName="Swap"
 				lineKey="swap"
-				chartData={this.state.chartData}
+				chartData={chartData}
 				refreshChartData={this.getChartData.bind(this)}
 				stroke="#6F6CB2"
 			/>
@@ -126,7 +164,7 @@ export default class FrontPage extends Component {
 				xKey="dateTime"
 				lineName="avg elastic search response time ms"
 				lineKey="elastic_avg_search"
-				chartData={this.state.chartData}
+				chartData={chartData}
 				refreshChartData={this.getChartData.bind(this)}
 				stroke="#FF3535"
 				strokeWidth={2}
@@ -138,7 +176,7 @@ export default class FrontPage extends Component {
 				xKey="dateTime"
 				lineName="asp requests per second"
 				lineKey="asp_rps"
-				chartData={this.state.chartData}
+				chartData={chartData}
 				refreshChartData={this.getChartData.bind(this)}
 				stroke="#1FC844"
 				strokeWidth={3}
@@ -156,7 +194,7 @@ export default class FrontPage extends Component {
 				xKey="dateTime"
 				lineName="redis_ops"
 				lineKey="redis_ops"
-				chartData={this.state.chartData}
+				chartData={chartData}
 				refreshChartData={this.getChartData.bind(this)}
 				stroke="blue"
 				strokeWidth={2}
@@ -167,7 +205,7 @@ export default class FrontPage extends Component {
 				xKey="dateTime"
 				lineName="redis_ram"
 				lineKey="redis_ram"
-				chartData={this.state.chartData}
+				chartData={chartData}
 				refreshChartData={this.getChartData.bind(this)}
 				stroke="blue"
 				strokeWidth={2}
@@ -178,7 +216,7 @@ export default class FrontPage extends Component {
 				xKey="dateTime"
 				lineName="redis_ram_fragmentation"
 				lineKey="redis_ram_fragmentation"
-				chartData={this.state.chartData}
+				chartData={chartData}
 				refreshChartData={this.getChartData.bind(this)}
 				stroke="blue"
 				strokeWidth={2}

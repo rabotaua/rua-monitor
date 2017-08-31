@@ -49,17 +49,21 @@ export default class SimpleLineChart extends Component {
 			{chartData === null ? this.loaderWrap() : null}
 			{chartData === false ? this.errorWrap() : null}
 
-			{chartData ? <ResponsiveContainer width="100%" height={300}>
-				<LineChart data={chartData}
-				           margin={{ top: 20, bottom: 20 }}>
-					<XAxis dataKey={xKey}/>
-					<YAxis/>
-					<CartesianGrid strokeDasharray="3 3"/>
-					<Tooltip/>
-					<Legend/>
-					<Line legendType="square" type="monotone" name={lineName} dataKey={lineKey} dot={dot} strokeWidth={strokeWidth} stroke={stroke || '#000'} activeDot={{ r: 8 }}/>
-				</LineChart>
-			</ResponsiveContainer> : null}
+			{chartData ? <div style={{ position: 'relative' }}>
+				<ResponsiveContainer width="100%" height={300}>
+					<LineChart data={chartData}
+					           margin={{ top: 20, bottom: 20 }}>
+						<XAxis dataKey={xKey}/>
+						<YAxis/>
+						<CartesianGrid strokeDasharray="3 3"/>
+						<Tooltip/>
+						<Legend/>
+						<Line legendType="square" type="monotone" name={lineName} dataKey={lineKey} dot={dot} strokeWidth={strokeWidth} stroke={stroke || '#000'} activeDot={{ r: 8 }}/>
+					</LineChart>
+				</ResponsiveContainer>
+
+				{this.props.children}
+			</div> : null}
 		</div>
 	}
 }
