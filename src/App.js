@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {
-	BrowserRouter as Router,
+	BrowserRouter as Router, Redirect,
 	Route
 } from 'react-router-dom'
 import SignIn from './SignIn'
@@ -14,9 +14,9 @@ export default class App extends Component {
 			<div>
 				<Header />
 				<Container style={{ paddingTop: 100 }}>
-					<Route exact path="/" component={SignIn}/>
-					<Route path="/front-page" component={MainPage}/>
-					<Route component={SignIn}/>
+					<Route path="/rua-monitor/" component={SignIn}/>
+					<Route path="/rua-monitor/front-page" component={MainPage}/>
+					<Redirect to="/rua-monitor" />
 				</Container>
 			</div>
 		</Router>

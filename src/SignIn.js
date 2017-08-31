@@ -57,7 +57,7 @@ export default class SignIn extends Component {
 	}
 
 	render() {
-		if (this.checkToken()) return <Redirect to="/front-page"/>
+		if (this.checkToken()) return <Redirect to="/rua-monitor/front-page"/>
 
 		return <div style={{ paddingTop: 100 }}>
 			<Grid textAlign='center' verticalAlign='middle'>
