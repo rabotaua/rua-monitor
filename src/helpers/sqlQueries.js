@@ -57,4 +57,5 @@ export const jsErrorSqlQuery = `
 	ga.js_errors
 	from minutes m
 	left join ga on ga.minute = m.minute
+	order by minute asc
 `
