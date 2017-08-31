@@ -12,7 +12,7 @@ export const getData = (query) => {
 	}).then(({data}) => data).catch(e => {
 		if(e && e.response && e.response.status === 401) {
 			localStorage.removeItem('authToken')
-			window.location = '/'
+			window.location = '/rua-monitor'
 		}
 		else {
 			throw e

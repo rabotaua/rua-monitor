@@ -6,7 +6,7 @@ import logo from './media/charts-icon.svg'
 export default class Header extends Component {
 	logOut() {
 		localStorage.removeItem('authToken')
-		window.location = '/'
+		window.location = '/rua-monitor'
 	}
 
     render() {
