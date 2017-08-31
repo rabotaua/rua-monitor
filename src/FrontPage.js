@@ -28,7 +28,8 @@ export default class FrontPage extends Component {
 				const formattedData = data.map(item => {
 					return {
 						...item,
-						'dateTime': formatDateTime(item['minute'], 'HH:mm')
+						'dateTime': formatDateTime(item['minute'], 'HH:mm'),
+						redis_ram: parseInt(item['redis_ram'] / 1000000, 10)
 					}
 				})
 
