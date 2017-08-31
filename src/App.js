@@ -16,6 +16,7 @@ export default class App extends Component {
 				<Container style={{ paddingTop: 100 }}>
 					<Route exact path="/" component={SignIn}/>
 					<Route path="/front-page" component={MainPage}/>
+					<Route component={SignIn}/>
 				</Container>
 			</div>
 		</Router>
