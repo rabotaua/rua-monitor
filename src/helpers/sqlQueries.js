@@ -37,3 +37,24 @@ export const bigSqlQuery = `
 	left join perf r3 on r3.minute = m.minute and r3.category = 'Redis' and r3.counter = 'mem_fragmentation_ratio'
 	order by minute
 `
+
+export const jsErrorSqlQuery = `
+	with minutes as (
+	SELECT
+	TIMESTAMP_SUB(TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), MINUTE), INTERVAL num MINUTE) AS minute
+	FROM UNNEST(GENERATE_ARRAY(0, 30)) AS num ORDER BY num
+	), ga as (
+	select 
+	TIMESTAMP_TRUNC(TIMESTAMP_SECONDS(timestamp), MINUTE) as minute,
+	countif(type = 'pageview') as hits,
+	countif(type = 'event' and eventInfo.eventCategory = 'js error') as js_errors
+	from \`majestic-cairn-171208\`.bigdata.ga where page.hostname = 'rabota.ua' and (_PARTITIONTIME IS NULL OR _PARTITIONTIME = TIMESTAMP(CURRENT_DATE()))
+	AND TIMESTAMP_SECONDS(timestamp) >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 30 MINUTE)
+	group by minute
+	)
+	select m.minute,
+	ga.hits,
+	ga.js_errors
+	from minutes m
+	left join ga on ga.minute = m.minute
+`

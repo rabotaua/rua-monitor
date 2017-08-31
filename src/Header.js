@@ -22,10 +22,6 @@ export default class Header extends Component {
 			        />
 			        RUA Monitor
 		        </Menu.Item>
-		        <Menu.Item as='a'>SRV12</Menu.Item>
-		        <Menu.Item as='a'>SRV16</Menu.Item>
-		        <Menu.Item as='a'>SRV17</Menu.Item>
-		        <Menu.Item as='a'>Another metrics</Menu.Item>
 		        <Menu.Menu position='right'>
 			        <Menu.Item>
 				        Hello, &nbsp;

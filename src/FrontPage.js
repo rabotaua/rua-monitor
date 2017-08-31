@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
 import { getData } from './helpers/apiHelper'
-import { bigSqlQuery } from './helpers/sqlQueries'
+import { bigSqlQuery, jsErrorSqlQuery } from './helpers/sqlQueries'
 import { formatDateTime } from './helpers/formatDateTime'
 import { Header } from 'semantic-ui-react'
 import SimpleLineChart from './SimpleLineChart'
+import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
 
 export default class FrontPage extends Component {
@@ -11,13 +12,15 @@ export default class FrontPage extends Component {
 		super()
 
 		this.state = {
-			chartData: null
+			chartData: null,
+			jsErrorChartData: null
 		}
 	}
 
 	getChartData() {
 		this.setState({
-			chartData: null
+			chartData: null,
+			jsErrorChartData: null
 		})
 
 		getData(bigSqlQuery).then(data => {
@@ -35,6 +38,29 @@ export default class FrontPage extends Component {
 			}
 		}).catch((e) => {
 			this.setState({ chartData: false })
+			throw e
+		})
+
+
+
+
+
+
+		getData(jsErrorSqlQuery).then(data => {
+			if (data) {
+				const formattedData = data.map(item => {
+					return {
+						...item,
+						'dateTime': formatDateTime(item['minute'], 'HH:mm')
+					}
+				})
+
+				this.setState({
+					jsErrorChartData: formattedData
+				})
+			}
+		}).catch((e) => {
+			this.setState({ jsErrorChartData: false })
 			throw e
 		})
 	}
@@ -117,6 +143,7 @@ export default class FrontPage extends Component {
 				strokeWidth={3}
 			/>
 
+
 			<br/>
 			<br/>
 
@@ -155,6 +182,40 @@ export default class FrontPage extends Component {
 				stroke="blue"
 				strokeWidth={2}
 			/>
+
+
+			<br/>
+			<br/>
+
+			<Header as='h1' dividing>GA and Javascript errors </Header>
+			<br/>
+
+
+			<SimpleLineChart
+				chartTitle="Javascript errors"
+				xKey="dateTime"
+				lineName="count of errors"
+				lineKey="js_errors"
+				chartData={this.state.jsErrorChartData}
+				refreshChartData={this.getChartData.bind(this)}
+				stroke="red"
+				strokeWidth={3}
+			/>
+
+
+			{ this.state.jsErrorChartData ? <div>
+				<Header as='h3'>Hits</Header>
+				<ResponsiveContainer width="100%" height={300}>
+					<BarChart data={this.state.jsErrorChartData}>
+						<XAxis dataKey="dateTime" />
+						<YAxis />
+						<CartesianGrid strokeDasharray="3 3" />
+						<Tooltip />
+						<Legend />
+						<Bar dataKey="hits" fill="#8884d8" />
+					</BarChart>
+				</ResponsiveContainer>
+			</div>: null }
 
 		</div>
 	}
