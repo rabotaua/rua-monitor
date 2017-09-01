@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Button, Container, Image, Menu } from 'semantic-ui-react'
-import { getTokenData } from './helpers/commonsHelpers'
+import { checkExpireToken, getTokenData } from './helpers/commonsHelpers'
 import logo from './media/charts-icon.svg'
 
 export default class Header extends Component {
@@ -12,7 +12,7 @@ export default class Header extends Component {
     render() {
 		const token = localStorage.getItem('authToken')
 
-        return token ? <Menu fixed='top' size='large'>
+        return checkExpireToken(token) ? <Menu fixed='top' size='large'>
 	        <Container>
 		        <Menu.Item as='a' header>
 			        <Image

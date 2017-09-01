@@ -3,7 +3,7 @@ import { Redirect } from 'react-router-dom'
 import { getTokenApi } from './helpers/apiHelper'
 import { Button, Form, Grid, Header, Image, Message, Segment } from 'semantic-ui-react'
 import chartIcon from './media/charts-icon.svg'
-import { getTokenData } from './helpers/commonsHelpers'
+import { checkExpireToken } from './helpers/commonsHelpers'
 
 export default class SignIn extends Component {
 	constructor() {
@@ -22,13 +22,7 @@ export default class SignIn extends Component {
 	}
 
 	checkToken() {
-		const token = localStorage.getItem('authToken')
-		if (!token) return false
-
-		const tokenData = getTokenData(token)
-		if(!tokenData.hasOwnProperty('exp')) return false
-
-		return (tokenData.exp * 1000) - Date.now() > 1 // check expire token
+		return checkExpireToken(localStorage.getItem('authToken'))
 	}
 
 	submit(e) {

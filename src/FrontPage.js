@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { getData } from './helpers/apiHelper'
 import { bigSqlQuery, jsErrorSqlQuery } from './helpers/sqlQueries'
 import { formatDateTime } from './helpers/formatDateTime'
-import { Container, Divider, Header } from 'semantic-ui-react'
+import { Container, Header } from 'semantic-ui-react'
 import SimpleLineChart from './SimpleLineChart'
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import ReactSpeedometer from "react-d3-speedometer"

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {
-	BrowserRouter as Router,
+	HashRouter as Router,
 	Route
 } from 'react-router-dom'
 import SignIn from './SignIn'
@@ -14,7 +14,7 @@ export default class App extends Component {
 			<div>
 				<Header />
 				<Container style={{ paddingTop: 100 }}>
-					<Route exact path="/rua-monitor/" component={SignIn}/>
+					<Route exact path="/:path(rua-monitor|)" component={SignIn}/>
 					<Route path="/rua-monitor/front-page" component={MainPage}/>
 				</Container>
 			</div>
