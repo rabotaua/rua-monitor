@@ -47,14 +47,16 @@ export const jsErrorSqlQuery = `
 	select
 	TIMESTAMP_TRUNC(TIMESTAMP_SECONDS(timestamp), MINUTE) as minute,
 	countif(type = 'pageview') as hits,
-	countif(type = 'event' and eventInfo.eventCategory = 'js error') as js_errors
+	countif(type = 'event' and eventInfo.eventCategory = 'js error') as js_errors,
+	countif(type = 'event' and eventInfo.eventCategory = 'js error' and page.pagePath LIKE '%mode=apply%') as apply_js_errors
 	from \`majestic-cairn-171208\`.bigdata.ga where page.hostname = 'rabota.ua' and (_PARTITIONTIME IS NULL OR _PARTITIONTIME = TIMESTAMP(CURRENT_DATE()))
 	AND TIMESTAMP_SECONDS(timestamp) >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 32 MINUTE)
 	group by minute
 	)
 	select m.minute,
 	ga.hits,
-	ga.js_errors
+	ga.js_errors,
+	ga.apply_js_errors
 	from minutes m
 	left join ga on ga.minute = m.minute
 	order by minute asc

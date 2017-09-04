@@ -242,6 +242,18 @@ export default class FrontPage extends Component {
 			/>
 
 
+			<SimpleLineChart
+				chartTitle="Javascript errors on Apply page"
+				xKey="dateTime"
+				lineName="count of errors on Apply page"
+				lineKey="apply_js_errors"
+				chartData={this.state.jsErrorChartData}
+				refreshChartData={this.getChartData.bind(this)}
+				stroke="#00815D"
+				strokeWidth={2.2}
+			/>
+
+
 			{ this.state.jsErrorChartData ? <div>
 				<Header as='h3'>Hits</Header>
 				<ResponsiveContainer width="100%" height={300}>
