@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iis charts</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highcharts/5.0.14/css/highcharts.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/5.0.14/highcharts.js"></script>
+    <style>
+        .highcharts-credits {display:none}
+    </style>
+</head>
+<body>
+    <form id="frm">
+            <input id="username" type="mail" placeholder="username@rabota.ua" required>
+            <input id="password" type="password" required>
+            <input type="submit" value="Submit">
+    </form>
+    <input type="text" id="token">
+    <h3>overall</h3>
+    <div class="overall"></div>
+    <h3>by server</h3>
+    <div class="servers"></div>
+    <h3>by site</h3>
+    <div class="sites"></div>
+    <h3>by pages</h3>
+    <div class="pages"></div>
+    <script>
+        document.getElementById('token').value = localStorage.getItem('token') || ''
+
+        var query = `with minutes as (
+  SELECT TIMESTAMP_SUB(TIMESTAMP_TRUNC(CURRENT_TIMESTAMP(), MINUTE), INTERVAL num MINUTE) AS minute
+  FROM UNNEST(GENERATE_ARRAY(1, 61)) AS num ORDER BY num
+), data as (
+  select
+  TIMESTAMP_TRUNC(timestamp, MINUTE) as minute,
+  computername,
+  regexp_replace(replace(host, 'www.', ''), r'.+-api', 'api') as site,
+  regexp_replace(
+  regexp_replace(
+  regexp_replace(
+  regexp_replace(
+  regexp_replace(
+  regexp_replace(
+  regexp_replace(
+  regexp_replace(
+  regexp_replace(
+  regexp_replace(
+  regexp_replace(replace(replace(replace(lower(uri), '/ua', '/'), '//', '/'), '.asmx/js', '.asmx'), r'\\?.+', '')
+  , r'[а-яії]+(-[а-яії]+)*', '#')
+  , r'/v\\d+\\.\\d+/', '/')
+  , r'\\d+', '0')
+  , r'/cvphotos/.+', '/cvphotos/x')
+  , r'zapros/.+', 'zapros/x')
+  , r'/data/cimg/.+', '/data/cimg/x')
+  , r'zapros-.+', 'zapros-x')
+  , r'#&.+', '#')
+  , r'/dictionary/.+', '/dictionary/#')
+  , r'/data/attach/aspose.words.+', '/data/attach/aspose.words')
+  as mask,
+  count(distinct ip) as distinct_ip,
+  countif(country_code <> 'UA') as non_ua_country_count,
+  countif(device_brand = 'Spider') as known_spider_count,
+  count(*) as count_total,
+  countif(status < 400) as count_success,
+  countif(status >= 400) as count_failed,
+  cast(avg(timetaken) as int64) as avg_time
+  from \`majestic-cairn-171208\`.data.iis where (_PARTITIONTIME IS NULL OR _PARTITIONTIME = TIMESTAMP(CURRENT_DATE()))
+  AND timestamp >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 62 MINUTE)
+  group by minute, computername, site, mask
+  order by count_total desc
+), top_masks_by_count as (
+  select mask from data group by mask order by count(*) desc limit 10
+), top_masks_by_time as (
+  select mask from data group by mask order by avg(avg_time) desc limit 10
+), top_masks as (
+  select mask from top_masks_by_count union all select mask from top_masks_by_time
+)
+select d.*
+from minutes m
+left join data d on m.minute = d.minute
+where d.mask in (select mask from top_masks)
+        `
+        var data = [], minutes = [];
+
+        const dataUniqColumnItems = col => Object.values(data.map(item => item[col]).reduce((acc, x) => Object.assign(acc, {[x]: x}), {})).sort()
+
+        const agg = (data, min, col, filter = () => true) => {
+            var tmp = data.filter(i => i.minute === min).filter(filter).map(i => parseInt(i[col]));
+            return Math.round(tmp.reduce((a,b) => a+b, 0) / tmp.length || 1)
+        }
+
+        const chart = (title, target, filter = () => true, height = '200px') => {
+            var div = document.createElement('DIV')
+            div.style.height = height
+            document.querySelector(target).appendChild(div)
+            Highcharts.chart(div, {
+                title: { text: title },
+                legend: { enabled: false },
+                margin: 0,
+                padding: 0,
+                spacing: [0, 0, 0, 0],
+                plotOptions: {
+                    series: {
+                        marker: {
+                            enabled: false
+                        }
+                    }
+                },
+                xAxis: {
+                    type: 'datetime',
+                    title: {
+                        text: ''
+                    },
+                    labels: {enabled: false},
+                    categories: minutes
+                },
+                yAxis: {
+                    title: {
+                        text: ''
+                    },
+                    gridLineColor: '#555',
+                    labels: {enabled: false}
+                },
+                series: ['count_total', 'avg_time', 'count_failed', 'known_spider_count', 'non_ua_country_count', 'distinct_ip'].map(key => ({
+                    name: key,
+                    data: minutes.map(m => agg(data, m, key, filter))
+                }))
+            });
+        }
+
+
+        const go = () => {
+            var token = localStorage.getItem('token')
+            console.log('waiting for query...')
+            console.time('ajax')
+            fetch('https://bigquery.azurewebsites.net/query', {method: 'POST', body: JSON.stringify({query: query}), headers: {'Content-Type': 'application/json; charset=utf-8', 'Authorization': `Bearer ${token}`}})
+                    .then(response => response.json())
+                    .then(items => {
+                        console.timeEnd('ajax')
+                        data = items
+                        minutes = dataUniqColumnItems('minute')
+
+                        dataUniqColumnItems('computername').forEach(server => {
+                            chart(server, '.servers', item => item.computername === server)
+                        })
+
+                        dataUniqColumnItems('site').forEach(site => {
+                            chart(site, '.sites', item => item.site === site)
+                        })
+
+                        dataUniqColumnItems('mask').forEach(mask => {
+                            chart(mask, '.pages', item => item.mask === mask)
+                        })
+
+                        chart('', '.overall', () => true, '400px')
+                    })
+        }
+
+        document.getElementById('frm').addEventListener('submit', event => {
+            event.preventDefault()
+            fetch('https://adjwt-api.rabota.ua/token', {method: 'POST', body: JSON.stringify({username: document.getElementById('username').value, password: document.getElementById('password').value}), headers: {'Content-Type': 'application/json'}}).then(function (response) {
+                    return response.text();
+            }).then(function(token) {
+                document.getElementById('token').value = token
+                localStorage.setItem('token', token)
+                go()
+            });
+        })
+        if (localStorage.getItem('token')) go()
+    </script>
+</body>
+</html>

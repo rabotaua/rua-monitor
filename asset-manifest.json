@@ -1,14 +1,14 @@
 {
   "main.css": "static/css/main.3ffc1788.css",
   "main.css.map": "static/css/main.3ffc1788.css.map",
-  "main.js": "static/js/main.da3ad660.js",
-  "main.js.map": "static/js/main.da3ad660.js.map",
-  "static\\media\\charts-icon.svg": "static/media/charts-icon.dde095ed.svg",
-  "static\\media\\flags.png": "static/media/flags.9c74e172.png",
-  "static\\media\\icons.eot": "static/media/icons.674f50d2.eot",
-  "static\\media\\icons.svg": "static/media/icons.912ec66d.svg",
-  "static\\media\\icons.ttf": "static/media/icons.b06871f2.ttf",
-  "static\\media\\icons.woff": "static/media/icons.fee66e71.woff",
-  "static\\media\\icons.woff2": "static/media/icons.af7ae505.woff2",
-  "static\\media\\space-bg.jpg": "static/media/space-bg.b2cdfd2f.jpg"
+  "main.js": "static/js/main.daa8bb6b.js",
+  "main.js.map": "static/js/main.daa8bb6b.js.map",
+  "static/media/charts-icon.svg": "static/media/charts-icon.53404a18.svg",
+  "static/media/flags.png": "static/media/flags.9c74e172.png",
+  "static/media/icons.eot": "static/media/icons.674f50d2.eot",
+  "static/media/icons.svg": "static/media/icons.912ec66d.svg",
+  "static/media/icons.ttf": "static/media/icons.b06871f2.ttf",
+  "static/media/icons.woff": "static/media/icons.fee66e71.woff",
+  "static/media/icons.woff2": "static/media/icons.af7ae505.woff2",
+  "static/media/space-bg.jpg": "static/media/space-bg.b2cdfd2f.jpg"
 }
